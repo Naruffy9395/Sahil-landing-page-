@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,8 +21,8 @@ h1,h2,h3{font-family:'Space Grotesk',sans-serif;}
 a{color:inherit;text-decoration:none;}
 img{max-width:100%;display:block;}
 .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
-.reveal{opacity:0;transform:translateY(24px);transition:opacity .8s ease, transform .8s ease;}
-.reveal.show{opacity:1;transform:translateY(0);}
+.reveal{opacity:0;transform:translateY(24px);animation:fadeUp 0.9s ease forwards;animation-delay:0.15s;}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0);}}
 
 nav{position:fixed;top:0;left:0;right:0;z-index:50;backdrop-filter:blur(10px);background:rgba(11,13,18,.75);border-bottom:1px solid var(--line);}
 nav .wrap{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;}
@@ -350,9 +351,8 @@ footer a:hover{color:var(--amber);}
 
   var geo2 = new THREE.IcosahedronGeometry(4.6, 0);
   var wire2 = new THREE.WireframeGeometry(geo2);
-  var mat2 = new THREE.LineBasicMaterial({ color: 0x33C9B0, transparent: true, opacity: 0.15 }
-
-    var outerShape = new THREE.LineSegments(wire2, mat2);
+  var mat2 = new THREE.LineBasicMaterial({ color: 0x33C9B0, transparent: trvar mat2 = new THREE.LineBasicMaterial({ color: 0x33C9B0, transparent: true, opacity: 0.15 });
+  var outerShape = new THREE.LineSegments(wire2, mat2);
   group.add(outerShape);
 
   var starGeo = new THREE.BufferGeometry();
@@ -387,20 +387,7 @@ footer a:hover{color:var(--amber);}
   }
   animate();
 })();
-
-document.addEventListener('DOMContentLoaded', function () {
-  var revealEls = document.querySelectorAll('.reveal');
-  var observer = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('show');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.12 });
-  revealEls.forEach(function (el) { observer.observe(el); });
-});
 </script>
 
 </body>
-</html>                                     
+</html>
