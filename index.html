@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sahil — Builder, Sahyom AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0B0D12; --bg-alt:#12151D; --panel:#161A24; --line:#252A38;
+  --amber:#F2A93C; --amber-soft:#F2A93C33; --teal:#33C9B0;
+  --text:#EDEEF2; --text-soft:#9AA0B0; --text-dim:#5C6272;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+h1,h2,h3{font-family:'Space Grotesk',sans-serif;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:inherit;text-decoration:none;}
+img{max-width:100%;display:block;}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .8s ease, transform .8s ease;}
+.reveal.show{opacity:1;transform:translateY(0);}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:50;backdrop-filter:blur(10px);background:rgba(11,13,18,.75);border-bottom:1px solid var(--line);}
+nav .wrap{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;}
+.brand{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:17px;letter-spacing:.01em;}
+.brand span{color:var(--amber);}
+.nav-links{display:flex;gap:28px;font-size:13.5px;color:var(--text-soft);}
+.nav-links a:hover{color:var(--text);}
+.nav-cta{background:var(--amber);color:#1A1206;padding:9px 18px;border-radius:8px;font-weight:600;font-size:13px;transition:transform .2s ease;}
+.nav-cta:hover{transform:translateY(-1px);}
+@media(max-width:700px){.nav-links{display:none;}}
+
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;padding-top:70px;overflow:hidden;}
+#heroCanvas{position:absolute;inset:0;z-index:0;opacity:.85;}
+.hero-content{position:relative;z-index:2;padding:60px 0;}
+.hero-content .wrap{width:100%;}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--teal);border:1px solid #33C9B033;background:#33C9B00D;padding:6px 14px;border-radius:999px;margin-bottom:24px;}
+.eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--teal);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.hero h1{font-size:clamp(38px,6.5vw,68px);font-weight:700;line-height:1.05;max-width:780px;letter-spacing:-.01em;overflow:hidden;}
+.hero h1 .line{display:block;overflow:hidden;}
+.hero h1 .line span{display:inline-block;transform:translateY(110%);animation:lineUp .8s cubic-bezier(.22,1,.36,1) forwards;}
+.hero h1 .line:nth-child(1) span{animation-delay:.1s;}
+.hero h1 .line:nth-child(2) span{animation-delay:.25s;}
+.hero h1 .line:nth-child(3) span{animation-delay:.4s;}
+@keyframes lineUp{to{transform:translateY(0);}}
+.hero h1 .accent{
+  background:linear-gradient(100deg, var(--amber) 0%, #FFD98C 25%, var(--amber) 50%, #FFD98C 75%, var(--amber) 100%);
+  background-size:250% auto;
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  animation:shimmer 4s linear infinite;
+}
+@keyframes shimmer{to{background-position:250% center;}}
+.hero p.lead{max-width:560px;color:var(--text-soft);font-size:16.5px;margin:22px 0 34px;}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:9px;font-weight:600;font-size:14.5px;border:1.5px solid transparent;cursor:pointer;transition:transform .2s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease;}
+.btn-primary{background:var(--amber);color:#1A1206;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(242,169,60,.25);}
+.btn-outline{border-color:var(--line);color:var(--text);background:transparent;}
+.btn-outline:hover{border-color:var(--amber);transform:translateY(-2px);}
+.scroll-hint{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);display:flex;flex-direction:column;align-items:center;gap:8px;z-index:2;}
+.scroll-hint .line{width:1px;height:30px;background:linear-gradient(var(--text-dim),transparent);animation:scrollDown 1.8s infinite;}
+@keyframes scrollDown{0%{opacity:0;transform:translateY(-6px);}50%{opacity:1;}100%{opacity:0;transform:translateY(6px);}}
+
+section{padding:100px 0;position:relative;}
+.kicker{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--amber);letter-spacing:.08em;margin-bottom:12px;text-transform:uppercase;}
+.sec-title{font-size:clamp(26px,4vw,38px);font-weight:700;margin-bottom:14px;max-width:600px;}
+.sec-desc{color:var(--text-soft);font-size:15px;max-width:560px;margin-bottom:48px;}
+
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;}
+.about-img{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);aspect-ratio:4/3;}
+.about-img img{width:100%;height:100%;object-fit:cover;filter:grayscale(20%) contrast(1.05);}
+.about-img::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg, transparent 40%, rgba(11,13,18,.7));}
+.about-text p{color:var(--text-soft);font-size:15px;margin-bottom:16px;}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:32px;}
+.stat{border:1px solid var(--line);border-radius:10px;padding:18px 14px;background:var(--panel);}
+.stat .n{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;color:var(--amber);}
+.stat .l{font-size:11.5px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.04em;margin-top:4px;}
+
+.skills-wrap{background:var(--bg-alt);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.skill-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.skill-chip{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:20px 16px;transition:border-color .2s ease, transform .2s ease;}
+.skill-chip:hover{border-color:var(--amber);transform:translateY(-3px);}
+.skill-chip .ico{width:32px;height:32px;border-radius:8px;background:var(--amber-soft);color:var(--amber);display:flex;align-items:center;justify-content:center;font-size:14px;margin-bottom:12px;font-family:'JetBrains Mono',monospace;font-weight:700;}
+.skill-chip h3{font-size:14.5px;margin-bottom:4px;}
+.skill-chip p{font-size:12px;color:var(--text-dim);}
+
+.project-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;}
+.project-card{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel);transition:transform .25s ease, border-color .25s ease;}
+.project-card:hover{transform:translateY(-4px);border-color:#3a3f52;}
+.project-img{aspect-ratio:16/10;overflow:hidden;position:relative;}
+.project-img img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease;}
+.project-card:hover .project-img img{transform:scale(1.06);}
+.project-body{padding:22px;}
+.project-tag{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--teal);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;display:block;}
+.project-body h3{font-size:18px;margin-bottom:8px;}
+.project-body p{font-size:13.5px;color:var(--text-soft);margin-bottom:14px;}
+.stack-row{display:flex;gap:6px;flex-wrap:wrap;}
+.stack-pill{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--text-soft);border:1px solid var(--line);padding:4px 9px;border-radius:6px;}
+
+.timeline{border-left:1.5px solid var(--line);padding-left:32px;max-width:640px;}
+.tl-item{position:relative;padding-bottom:36px;}
+.tl-item:last-child{padding-bottom:0;}
+.tl-item::before{content:"";position:absolute;left:-38px;top:4px;width:11px;height:11px;border-radius:50%;background:var(--bg);border:2px solid var(--amber);}
+.tl-item .yr{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--amber);margin-bottom:4px;}
+.tl-item h3{font-size:16.5px;margin-bottom:6px;}
+.tl-item p{font-size:13.5px;color:var(--text-soft);}
+
+.contact-wrap{background:var(--bg-alt);border-top:1px solid var(--line);text-align:center;}
+.contact-wrap .sec-title, .contact-wrap .sec-desc{margin-left:auto;margin-right:auto;}
+.contact-ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+.contact-details{display:flex;gap:28px;justify-content:center;flex-wrap:wrap;margin-top:28px;}
+.contact-line{font-size:13.5px;color:var(--text-soft);display:flex;align-items:center;gap:8px;transition:color .2s ease;}
+.contact-line:hover{color:var(--amber);}
+.contact-line .mono{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;border:1px solid var(--line);padding:3px 7px;border-radius:5px;}
+
+footer{padding:32px 0;border-top:1px solid var(--line);}
+footer .wrap{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;font-size:12.5px;color:var(--text-dim);}
+footer a:hover{color:var(--amber);}
+
+@media(max-width:800px){
+  .about-grid{grid-template-columns:1fr;}
+  .skill-grid{grid-template-columns:repeat(2,1fr);}
+  .project-grid{grid-template-columns:1fr;}
+  .stat-row{grid-template-columns:repeat(3,1fr);}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="brand">SAHIL <span>/ Sahyom AI</span></div>
+    <div class="nav-links">
+      <a href="#about">About</a>
+      <a href="#skills">Skills</a>
+      <a href="#work">Work</a>
+      <a href="#journey">Journey</a>
+    </div>
+    <a class="nav-cta" href="#contact">Get in Touch</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <canvas id="heroCanvas"></canvas>
+  <div class="hero-content">
+    <div class="wrap">
+      <div class="eyebrow"><span class="dot"></span> Available for freelance &amp; collaborations</div>
+      <h1>
+        <span class="line"><span>Building AI-powered</span></span>
+        <span class="line"><span>tools &amp; <span class="accent">automation</span></span></span>
+        <span class="line"><span>from scratch.</span></span>
+      </h1>
+      <p class="lead">I'm Sahil — a self-taught developer and founder of Sahyom AI, building bots, storefronts, and automation systems entirely from a mobile device. No formal training. Just shipped products.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="#work">View My Work</a>
+        <a class="btn btn-outline" href="#contact">Start a Project</a>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-hint"><span>SCROLL</span><span class="line"></span></div>
+</header>
+
+<section id="about">
+  <div class="wrap">
+    <div class="about-grid">
+      <div class="about-img reveal">
+        <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1000&q=70" alt="Code on screen">
+      </div>
+      <div class="about-text reveal">
+        <div class="kicker">About Me</div>
+        <h2 class="sec-title">Self-taught. Mobile-only. Product-obsessed.</h2>
+        <p>I learned to code entirely on an Android phone — no laptop, no bootcamp, no classroom. Just an editor app, an AI assistant, and a lot of trial and error.</p>
+        <p>Over the past couple of years I've shipped dozens of real projects: Telegram bots with persistent memory, Shopify stores, WhatsApp AI assistants, and automation pipelines for small businesses. Now I'm building Sahyom AI — a venture focused on AI automation and intelligent agents for businesses.</p>
+        <div class="stat-row">
+          <div class="stat"><div class="n">50+</div><div class="l">Telegram Bots</div></div>
+          <div class="stat"><div class="n">20+</div><div class="l">Shopify Stores</div></div>
+          <div class="stat"><div class="n">100%</div><div class="l">Built on Mobile</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="skills" class="skills-wrap">
+  <div class="wrap">
+    <div class="kicker reveal">What I Work With</div>
+    <h2 class="sec-title reveal">Skills &amp; Tools</h2>
+    <p class="sec-desc reveal">A practical, product-first toolkit built through real projects rather than formal courses.</p>
+    <div class="skill-grid">
+      <div class="skill-chip reveal"><div class="ico">PY</div><h3>Python</h3><p>Automation, bots, backend logic</p></div>
+      <div class="skill-chip reveal"><div class="ico">AI</div><h3>AI Integration</h3><p>LLM APIs, prompt design, agents</p></div>
+      <div class="skill-chip reveal"><div class="ico">TG</div><h3>Telegram Bots</h3><p>Multi-feature bots with memory</p></div>
+      <div class="skill-chip reveal"><div class="ico">WA</div><h3>WhatsApp API</h3><p>Cloud API, Flask webhooks</p></div>
+      <div class="skill-chip reveal"><div class="ico">SH</div><h3>Shopify</h3><p>Store builds &amp; storefront setup</p></div>
+      <div class="skill-chip reveal"><div class="ico">DB</div><h3>SQLite</h3><p>Lightweight persistent storage</p></div>
+      <div class="skill-chip reveal"><div class="ico">AD</div><h3>Meta Ads</h3><p>Facebook &amp; Google campaigns</p></div>
+      <div class="skill-chip reveal"><div class="ico">WD</div><h3>Web Dev</h3><p>HTML, CSS, responsive design</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="work">
+  <div class="wrap">
+    <div class="kicker reveal">Selected Work</div>
+    <h2 class="sec-title reveal">Projects</h2>
+    <p class="sec-desc reveal">A few things I've designed, built, and shipped end-to-end.</p>
+    <div class="project-grid">
+      <div class="project-card reveal">
+        <div class="project-img">
+          <img src="https://images.unsplash.com/photo-1611606063065-ee7946f0787a?auto=format&fit=crop&w=900&q=70" alt="Bot automation concept">
+        </div>
+        <div class="project-body">
+          <span class="project-tag">Automation</span>
+          <h3>Multi-Feature Telegram Bot</h3>
+          <p>An AI-driven Telegram bot with per-user memory, order tracking, image analysis, and lead collection — built and iterated across multiple LLM providers.</p>
+          <div class="stack-row">
+            <span class="stack-pill">Python</span>
+            <span class="stack-pill">SQLite</span>
+            <span class="stack-pill">GPT-4o-mini</span>
+          </div>
+        </div>
+      </div>
+      <div class="project-card reveal">
+        <div class="project-img">
+          <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=900&q=70" alt="Ecommerce store concept">
+        </div>
+        <div class="project-body">
+          <span class="project-tag">E-commerce</span>
+          <h3>Shopify Storefronts</h3>
+          <p>20+ Shopify stores built and configured for small business clients, from product setup to ad-ready storefronts.</p>
+          <div class="stack-row">
+            <span class="stack-pill">Shopify</span>
+            <span class="stack-pill">Meta Ads</span>
+            <span class="stack-pill">Google Ads</span>
+          </div>
+        </div>
+      </div>
+      <div class="project-card reveal">
+        <div class="project-img">
+          <img src="https://images.unsplash.com/photo-1587560699334-cc4ff634909a?auto=format&fit=crop&w=900&q=70" alt="Chat interface concept">
+        </div>
+        <div class="project-body">
+          <span class="project-tag">AI Chatbot</span>
+          <h3>WhatsApp AI Assistant</h3>
+          <p>A conversational assistant built on the WhatsApp Cloud API with a Flask backend and Gemini-powered responses.</p>
+          <div class="stack-row">
+            <span class="stack-pill">Flask</span>
+            <span class="stack-pill">WhatsApp Cloud API</span>
+            <span class="stack-pill">Gemini</span>
+          </div>
+        </div>
+      </div>
+      <div class="project-card reveal">
+        <div class="project-img">
+          <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=900&q=70" alt="Digital product concept">
+        </div>
+        <div class="project-body">
+          <span class="project-tag">Digital Product</span>
+          <h3>Coding eBook for Beginners</h3>
+          <p>A self-published guide teaching people how to code entirely from a mobile phone — built from firsthand experience.</p>
+          <div class="stack-row">
+            <span class="stack-pill">Content</span>
+            <span class="stack-pill">Self-Publishing</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="journey" class="skills-wrap">
+  <div class="wrap">
+    <div class="kicker reveal">How I Got Here</div>
+    <h2 class="sec-title reveal">Journey</h2>
+    <p class="sec-desc reveal">From first lines of code to building a company.</p>
+    <div class="timeline">
+      <div class="tl-item reveal">
+        <div class="yr">START</div>
+        <h3>Taught myself to code — on a phone</h3>
+        <p>No laptop, no formal course. Just an editor app and persistence, learning Python and web basics through building real things.</p>
+      </div>
+      <div class="tl-item reveal">
+        <div class="yr">GROWTH</div>
+        <h3>Built and shipped dozens of client projects</h3>
+        <p>Telegram bots, Shopify stores, and ad campaigns for small business clients — turning skills into real, paying work.</p>
+      </div>
+      <div class="tl-item reveal">
+        <div class="yr">NOW</div>
+        <h3>Building Sahyom AI</h3>
+        <p>A new venture focused on AI automation and intelligent agents for businesses — built from the ground up, solo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="contact-wrap">
+  <div class="wrap">
+    <div class="kicker reveal">Get In Touch</div>
+    <h2 class="sec-title reveal">Let's build something together</h2>
+    <p class="sec-desc reveal">Open to freelance projects, automation work, and collaborations. Reach out — I usually reply within a day.</p>
+    <div class="contact-ctas reveal">
+      <a class="btn btn-primary" href="https://wa.me/919559124698" target="_blank">Message on WhatsApp</a>
+      <a class="btn btn-outline" href="mailto:needmart.store@gmail.com">Send an Email</a>
+    </div>
+    <div class="contact-details reveal">
+      <a href="tel:+919559124698" class="contact-line"><span class="mono">Phone</span> +91 95591 24698</a>
+      <a href="mailto:needmart.store@gmail.com" class="contact-line"><span class="mono">Email</span> needmart.store@gmail.com</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>&copy; 2026 Sahil &#8226; Sahyom AI</span>
+    <span>Built &amp; deployed by Sahyom AI</span>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+  var canvas = document.getElementById('heroCanvas');
+  var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
+  camera.position.z = 9;
+
+  function resize(){
+    var w = window.innerWidth, h = window.innerHeight;
+    renderer.setSize(w, h);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  var group = new THREE.Group();
+  scene.add(group);
+
+  var geo = new THREE.IcosahedronGeometry(3.2, 1);
+  var wire = new THREE.WireframeGeometry(geo);
+  var mat = new THREE.LineBasicMaterial({ color: 0xF2A93C, transparent: true, opacity: 0.35 });
+  var mainShape = new THREE.LineSegments(wire, mat);
+  group.add(mainShape);
+
+  var geo2 = new THREE.IcosahedronGeometry(4.6, 0);
+  var wire2 = new THREE.WireframeGeometry(geo2);
+  var mat2 = new THREE.LineBasicMaterial({ color: 0x33C9B0, transparent: true, opacity: 0.15 }
+
+    var outerShape = new THREE.LineSegments(wire2, mat2);
+  group.add(outerShape);
+
+  var starGeo = new THREE.BufferGeometry();
+  var starCount = 300;
+  var positions = new Float32Array(starCount * 3);
+  for (var i = 0; i < starCount; i++){
+    positions[i*3] = (Math.random() - 0.5) * 30;
+    positions[i*3+1] = (Math.random() - 0.5) * 30;
+    positions[i*3+2] = (Math.random() - 0.5) * 30;
+  }
+  starGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  var starMat = new THREE.PointsMaterial({ color: 0xEDEEF2, size: 0.03, transparent: true, opacity: 0.5 });
+  var stars = new THREE.Points(starGeo, starMat);
+  scene.add(stars);
+
+  var mouseX = 0, mouseY = 0;
+  window.addEventListener('mousemove', function(e){
+    mouseX = (e.clientX / window.innerWidth - 0.5);
+    mouseY = (e.clientY / window.innerHeight - 0.5);
+  });
+
+  function animate(){
+    requestAnimationFrame(animate);
+    mainShape.rotation.y += 0.0016;
+    mainShape.rotation.x += 0.0008;
+    outerShape.rotation.y -= 0.0009;
+    outerShape.rotation.x += 0.0005;
+    stars.rotation.y += 0.0002;
+    group.rotation.y += (mouseX * 0.4 - group.rotation.y) * 0.02;
+    group.rotation.x += (mouseY * 0.2 - group.rotation.x) * 0.02;
+    renderer.render(scene, camera);
+  }
+  animate();
+})();
+
+document.addEventListener('DOMContentLoaded', function () {
+  var revealEls = document.querySelectorAll('.reveal');
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('show');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  revealEls.forEach(function (el) { observer.observe(el); });
+});
+</script>
+
+</body>
+</html>                                     
