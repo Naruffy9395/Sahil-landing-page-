@@ -9,7 +9,7 @@
 const portfolioImages = {
     // About section image
     aboutImage: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1000&q=80",
-    
+                "https://www.magnific.com/free-psd/build-company-landing-page-template_15184904.htm#fromView=keyword&page=1&position=22&uuid=791563f2-0997-45a9-92d9-97b946ccdbe3&query=Portfolio+landing+page
     // Project images (क्रम में)
     projects: [
         "https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&w=900&q=80",  // Telegram Bot
