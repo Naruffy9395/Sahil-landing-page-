@@ -62,3 +62,67 @@
     });
   }, { threshold: 0.6 });
   timelineDots.forEach((el) => dotObserver.observe(el));
+/* 3. Vertical progress line fill inside timeline (if a line element exists) */
+  const timelineLine = document.querySelector(
+    ".timeline-line, .journey-line, [data-timeline-line]"
+  );
+  if (timelineLine) {
+    timelineLine.style.position = "relative";
+    const fillEl = document.createElement("div");
+    fillEl.className = "tl-line-fill";
+    timelineLine.appendChild(fillEl);
+
+    function updateLineFill() {
+      const rect = timelineLine.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const total = rect.height;
+      const visible = Math.min(vh * 0.75 - rect.top, total);
+      const pct = Math.max(0, Math.min(100, (visible / total) * 100));
+      fillEl.style.height = pct + "%";
+    }
+    addEventListener("scroll", updateLineFill, { passive: true });
+    addEventListener("resize", updateLineFill);
+    updateLineFill();
+  }
+
+  /* 4. Ripple effect on buttons/links tap (works on mobile too) */
+  document.addEventListener("click", function (e) {
+    const target = e.target.closest("a, button, .btn");
+    if (!target) return;
+    const rect = target.getBoundingClientRect();
+    const ripple = document.createElement("span");
+    ripple.className = "ripple";
+    const size = Math.max(rect.width, rect.height);
+    ripple.style.width = ripple.style.height = size + "px";
+    ripple.style.left = (e.clientX - rect.left - size / 2) + "px";
+    ripple.style.top = (e.clientY - rect.top - size / 2) + "px";
+    target.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 650);
+  });
+
+  /* 5. Active nav-link highlight based on scroll position */
+  const navLinks = document.querySelectorAll("nav a[href^='#']");
+  const navSections = Array.from(navLinks)
+    .map((a) => document.querySelector(a.getAttribute("href")))
+    .filter(Boolean);
+
+  function updateActiveNav() {
+    let current = null;
+    navSections.forEach((sec) => {
+      const rect = sec.getBoundingClientRect();
+      if (rect.top <= 120 && rect.bottom >= 120) current = sec;
+    });
+    navLinks.forEach((a) => {
+      const match = current && a.getAttribute("href") === "#" + current.id;
+      a.classList.toggle("nav-active", !!match);
+    });
+  }
+  addEventListener("scroll", updateActiveNav, { passive: true });
+  updateActiveNav();
+
+  /* 6. Subtle parallax on hero background dots layer */
+  addEventListener("scroll", () => {
+    const y = window.scrollY;
+    document.body.style.setProperty("--parallax-y", (y * 0.15) + "px");
+  }, { passive: true });
+})();
