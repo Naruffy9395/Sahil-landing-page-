@@ -47,10 +47,6 @@
 ---
 asciiart.club
 
-\`\`\`
-[ASCII ART YAHAN PASTE KARO]
-\`\`\`
-
 # Hi, I'm Sahil 👋
 
 Self-taught developer building automation & AI tools from a village in Bhadohi, UP — entirely from mobile.
