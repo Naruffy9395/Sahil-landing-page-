@@ -1,128 +1,112 @@
-/* Sahil Portfolio — Extra Premium Animations (add-on, works with existing animations.js) */
+/* Sahil Portfolio — Premium Extra Animations v3 */
 (function () {
   "use strict";
 
-  const css2 = `
+  const css = `
     html{scroll-behavior:smooth}
 
     body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
-      background-image:radial-gradient(rgba(255,255,255,.035) 1px,transparent 1px);
-      background-size:34px 34px;opacity:.5;will-change:transform}
+      background-image:radial-gradient(rgba(255,255,255,.03) 1px,transparent 1px);
+      background-size:36px 36px;opacity:.55}
 
-    .timeline-dot,.step-dot,[data-timeline] .dot,.journey-dot{
-      transition:box-shadow .5s ease,transform .5s ease,background .5s ease}
-    .timeline-dot.tl-active,.step-dot.tl-active,[data-timeline].tl-active .dot,.journey-dot.tl-active{
-      box-shadow:0 0 18px 4px rgba(255,180,60,.55);transform:scale(1.15)}
+    /* Section-wide fade + rise */
+    section{opacity:0;transform:translateY(40px);
+      transition:opacity 1s cubic-bezier(.16,1,.3,1),transform 1s cubic-bezier(.16,1,.3,1)}
+    section.sec-in{opacity:1;transform:translateY(0)}
 
-    .tl-line-fill{position:absolute;top:0;left:0;width:100%;height:0;
-      background:linear-gradient(180deg,#ffb43c,#ff8a3c);transition:height .6s cubic-bezier(.2,.8,.2,1)}
+    /* Stagger children inside a section once it's in */
+    .reveal{opacity:0;transform:translateY(24px);
+      transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+    section.sec-in .reveal{opacity:1;transform:translateY(0)}
 
-    section,[data-fade-up]{opacity:0;transform:translateY(28px);
-      transition:opacity .8s cubic-bezier(.2,.8,.2,1),transform .8s cubic-bezier(.2,.8,.2,1)}
-    section.fu-in,[data-fade-up].fu-in{opacity:1;transform:translateY(0)}
+    /* Project + skill cards: tilt-lift on hover, staggered entrance */
+    .project-card,.skill-chip,.stat{
+      transition:transform .5s cubic-bezier(.16,1,.3,1),box-shadow .5s ease,border-color .4s ease}
+    .project-card:hover{transform:translateY(-8px) scale(1.015);
+      box-shadow:0 30px 60px -28px rgba(0,0,0,.65);border-color:#3a3f52}
+    .skill-chip:hover{transform:translateY(-5px)}
+    .stat:hover{transform:translateY(-4px);border-color:var(--amber)}
 
-    .card,.project-card,.skill-card,.timeline-item,.journey-item{
-      transition:transform .4s cubic-bezier(.2,.8,.2,1),box-shadow .4s ease,border-color .4s ease}
-    .card:hover,.project-card:hover,.skill-card:hover,.timeline-item:hover,.journey-item:hover{
-      transform:translateY(-6px);box-shadow:0 20px 40px -20px rgba(0,0,0,.5)}
+    /* Image reveal wipe */
+    .about-img img,.project-img img{clip-path:polygon(0 0,0 0,0 100%,0 100%);
+      transition:clip-path 1.1s cubic-bezier(.16,1,.3,1)}
+    .about-img.img-in img,.project-img.img-in img{clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}
 
-    a,button,.btn{position:relative;overflow:hidden}
+    /* Timeline glow-dots */
+    .tl-item::before{transition:box-shadow .6s ease,transform .6s ease,border-color .6s ease}
+    .tl-item.tl-active::before{border-color:var(--teal)!important;
+      box-shadow:0 0 18px 4px rgba(51,201,176,.6);transform:scale(1.3)}
+    .tl-item h3,.tl-item p{transition:opacity .6s ease,transform .6s ease}
+
+    /* Stat counter pop */
+    .stat .n{display:inline-block}
+
+    /* Nav active + scrolled state */
+    nav{transition:background .4s ease,border-color .4s ease,box-shadow .4s ease}
+    nav.nav-scrolled{box-shadow:0 8px 24px -12px rgba(0,0,0,.5)}
+    .nav-links a{position:relative;transition:color .3s ease}
+    .nav-links a::after{content:'';position:absolute;left:0;bottom:-4px;width:0;height:1.5px;
+      background:var(--amber);transition:width .3s cubic-bezier(.16,1,.3,1)}
+    .nav-links a.nav-active{color:var(--text)!important}
+    .nav-links a.nav-active::after{width:100%}
+
+    /* Buttons: ripple + magnetic feel */
+    .btn,.contact-line{position:relative;overflow:hidden}
     .ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.35);
-      transform:scale(0);animation:rippleAnim .6s ease-out forwards;pointer-events:none}
+      transform:scale(0);animation:rippleAnim .65s ease-out forwards;pointer-events:none}
     @keyframes rippleAnim{to{transform:scale(3);opacity:0}}
 
-    nav a.nav-active{color:#ffb43c!important}
+    /* Custom cursor (desktop only) */
+    #cx-dot,#cx-ring{position:fixed;top:0;left:0;pointer-events:none;z-index:9999;
+      border-radius:50%;transform:translate(-50%,-50%);
+      transition:opacity .3s,width .25s,height .25s,border-color .25s,background .25s}
+    #cx-dot{width:6px;height:6px;background:var(--amber);opacity:0}
+    #cx-ring{width:36px;height:36px;border:1px solid rgba(237,238,242,.3);opacity:0}
+    body.cx-on #cx-dot,body.cx-on #cx-ring{opacity:1}
+    body.cx-hover #cx-ring{width:56px;height:56px;border-color:var(--amber);background:rgba(242,169,60,.08)}
+    body.cx-hover #cx-dot{opacity:0}
+    @media(hover:none),(pointer:coarse){#cx-dot,#cx-ring{display:none!important}}
   `;
-  const s2 = document.createElement("style");
-  s2.textContent = css2;
-  document.head.appendChild(s2);
+  const styleTag = document.createElement("style");
+  styleTag.textContent = css;
+  document.head.appendChild(styleTag);
 
-  /* 1. Generic fade-up for any section or [data-fade-up] element */
-  const fadeTargets = document.querySelectorAll("section, [data-fade-up]");
-  const fadeObserver = new IntersectionObserver((entries) => {
-    entries.forEach((e) => {
-      if (e.isIntersecting) {
-        e.target.classList.add("fu-in");
-        fadeObserver.unobserve(e.target);
+  /* 1. Section-level reveal with staggered children */
+  const sections = document.querySelectorAll("section");
+  const secObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const kids = entry.target.querySelectorAll(".reveal");
+        kids.forEach((el, i) => {
+          el.style.transitionDelay = (i * 0.08) + "s";
+        });
+        entry.target.classList.add("sec-in");
+        secObserver.unobserve(entry.target);
       }
     });
   }, { threshold: 0.15 });
-  fadeTargets.forEach((el) => fadeObserver.observe(el));
+  sections.forEach((el) => secObserver.observe(el));
 
-  /* 2. Timeline dot glow-in as you scroll (Journey section) */
-  const timelineDots = document.querySelectorAll(
-    ".timeline-dot, .step-dot, [data-timeline] .dot, .journey-dot"
-  );
-  const dotObserver = new IntersectionObserver((entries) => {
-    entries.forEach((e) => {
-      if (e.isIntersecting) {
-        e.target.classList.add("tl-active");
-        dotObserver.unobserve(e.target);
+  /* 2. Image wipe reveal */
+  const imgWraps = document.querySelectorAll(".about-img, .project-img");
+  const imgObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("img-in");
+        imgObserver.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.6 });
-  timelineDots.forEach((el) => dotObserver.observe(el));
-/* 3. Vertical progress line fill inside timeline (if a line element exists) */
-  const timelineLine = document.querySelector(
-    ".timeline-line, .journey-line, [data-timeline-line]"
-  );
-  if (timelineLine) {
-    timelineLine.style.position = "relative";
-    const fillEl = document.createElement("div");
-    fillEl.className = "tl-line-fill";
-    timelineLine.appendChild(fillEl);
+  }, { threshold: 0.25 });
+  imgWraps.forEach((el) => imgObserver.observe(el));
 
-    function updateLineFill() {
-      const rect = timelineLine.getBoundingClientRect();
-      const vh = window.innerHeight;
-      const total = rect.height;
-      const visible = Math.min(vh * 0.75 - rect.top, total);
-      const pct = Math.max(0, Math.min(100, (visible / total) * 100));
-      fillEl.style.height = pct + "%";
-    }
-    addEventListener("scroll", updateLineFill, { passive: true });
-    addEventListener("resize", updateLineFill);
-    updateLineFill();
-  }
-
-  /* 4. Ripple effect on buttons/links tap (works on mobile too) */
-  document.addEventListener("click", function (e) {
-    const target = e.target.closest("a, button, .btn");
-    if (!target) return;
-    const rect = target.getBoundingClientRect();
-    const ripple = document.createElement("span");
-    ripple.className = "ripple";
-    const size = Math.max(rect.width, rect.height);
-    ripple.style.width = ripple.style.height = size + "px";
-    ripple.style.left = (e.clientX - rect.left - size / 2) + "px";
-    ripple.style.top = (e.clientY - rect.top - size / 2) + "px";
-    target.appendChild(ripple);
-    setTimeout(() => ripple.remove(), 650);
-  });
-
-  /* 5. Active nav-link highlight based on scroll position */
-  const navLinks = document.querySelectorAll("nav a[href^='#']");
-  const navSections = Array.from(navLinks)
-    .map((a) => document.querySelector(a.getAttribute("href")))
-    .filter(Boolean);
-
-  function updateActiveNav() {
-    let current = null;
-    navSections.forEach((sec) => {
-      const rect = sec.getBoundingClientRect();
-      if (rect.top <= 120 && rect.bottom >= 120) current = sec;
+  /* 3. Timeline dot glow */
+  const tlItems = document.querySelectorAll(".tl-item");
+  const tlObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("tl-active");
+        tlObserver.unobserve(entry.target);
+      }
     });
-    navLinks.forEach((a) => {
-      const match = current && a.getAttribute("href") === "#" + current.id;
-      a.classList.toggle("nav-active", !!match);
-    });
-  }
-  addEventListener("scroll", updateActiveNav, { passive: true });
-  updateActiveNav();
-
-  /* 6. Subtle parallax on hero background dots layer */
-  addEventListener("scroll", () => {
-    const y = window.scrollY;
-    document.body.style.setProperty("--parallax-y", (y * 0.15) + "px");
-  }, { passive: true });
-})();
+  }, { threshold: 0.5 });
+  tlItems.forEach((el) => tlObserver.observe(el));
